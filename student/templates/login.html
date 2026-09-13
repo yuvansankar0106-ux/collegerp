@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Student Login</title>
+    <style>
+        body { font-family: Arial; background: #e3f2fd; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .box { background: white; padding: 30px; border-radius: 12px; width: 300px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); text-align: center; }
+        input { width: 90%; padding: 10px; margin: 10px 0; border-radius: 6px; border: 1px solid #ccc; }
+        button { background: #0d47a1; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; width: 100%; }
+        .error { color: red; font-size: 14px; }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <h2>Student Login</h2>
+        {% if error %}<p class="error">{{ error }}</p>{% endif %}
+        <form method="POST">
+            {% csrf_token %}
+            <input type="text" name="username" placeholder="Username (student)" required>
+            <input type="password" name="password" placeholder="Password (1234)" required>
+            <button type="submit">Login</button>
+        </form>
+    </div>
+</body>
+</html>

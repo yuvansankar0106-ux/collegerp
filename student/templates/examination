@@ -1,0 +1,3 @@
+def cia_marks(request):
+    marks = ExamMark.objects.filter(student=request.user)
+    return render(request, 'students/examination.html', {'marks': marks}

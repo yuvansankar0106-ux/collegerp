@@ -14,7 +14,19 @@ def home(request):
     return render(request, 'students/home.html')
 
 def profile(request):
-    return render(request, 'students/profile.html')
+    if not request.session.get('logged_in'):
+        return redirect('login')
+    data = request.session.get('student_data', {'name':'','age':'','roll_no':'','email':'','dept':''})
+    if request.method == 'POST':
+        data = {
+            'name': request.POST.get('name'),
+            'age': request.POST.get('age'),
+            'roll_no': request.POST.get('roll_no'),
+            'email': request.POST.get('email'),
+            'dept': request.POST.get('dept')
+        }
+        request.session['student_data'] = data
+    return render(request, 'students/profile.html', {'student': data})
 
 def courses(request):
     courses_list = ["Python Programming - CS101", "DBMS - CS102", "Web Tech - CS103"]

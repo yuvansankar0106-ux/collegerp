@@ -1,25 +1,4 @@
-<!DOCTYPE html>
-<html>
-<head><title>Student Profile</title></head>
-<body>
-<h1>Student Profile</h1>
-<p><b>Username:</b> {{ request.user.username }}</p>
-<p><b>Email:</b> {{ request.user.email }}</p>
-<hr>
-<a href="/">Back to Dashboard</a> | 
-<a href="/logout/">Logout</a>
-</body>
-</html>
-<h1>Student Profile</h1>
-<p><b>Name:</b> {{ student.name }}</p>
-<p><b>Age:</b> {{ student.age }}</p>
-<p><b>Roll No:</b> {{ student.roll_no }}</p>
-<p><b>Email:</b> {{ student.email }}</p>
-<p><b>Dept:</b> {{ student.dept }}</p>
-
-<a href="/">Back to Home</a> | <a href="/logout/">Logout</a>
-<h1>Student Profile - Edit Pannalam!</h1>
-
+<h1>Student Profile - Type Pannalam</h1>
 <form method="POST">
     {% csrf_token %}
     <p>Name: <input type="text" name="name" value="{{ student.name }}"></p>
@@ -29,15 +8,7 @@
     <p>Dept: <input type="text" name="dept" value="{{ student.dept }}"></p>
     <button type="submit">Save</button>
 </form>
-
-<br>
 <hr>
-<h2>Saved Data:</h2>
-<p><b>Name:</b> {{ student.name }}</p>
-<p><b>Age:</b> {{ student.age }}</p>
-<p><b>Roll No:</b> {{ student.roll_no }}</p>
-<p><b>Email:</b> {{ student.email }}</p>
-<p><b>Dept:</b> {{ student.dept }}</p>
-
-<br>
-<a href="/">Back to Home</a> | <a href="/logout/">Logout</a>
+<h2>Saved:</h2>
+<p>Name: {{ student.name }} | Age: {{ student.age }} | Roll: {{ student.roll_no }}</p>
+<a href="/">Home</a>

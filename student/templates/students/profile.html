@@ -18,3 +18,26 @@
 <p><b>Dept:</b> {{ student.dept }}</p>
 
 <a href="/">Back to Home</a> | <a href="/logout/">Logout</a>
+<h1>Student Profile - Edit Pannalam!</h1>
+
+<form method="POST">
+    {% csrf_token %}
+    <p>Name: <input type="text" name="name" value="{{ student.name }}"></p>
+    <p>Age: <input type="number" name="age" value="{{ student.age }}"></p>
+    <p>Roll No: <input type="text" name="roll_no" value="{{ student.roll_no }}"></p>
+    <p>Email: <input type="email" name="email" value="{{ student.email }}"></p>
+    <p>Dept: <input type="text" name="dept" value="{{ student.dept }}"></p>
+    <button type="submit">Save</button>
+</form>
+
+<br>
+<hr>
+<h2>Saved Data:</h2>
+<p><b>Name:</b> {{ student.name }}</p>
+<p><b>Age:</b> {{ student.age }}</p>
+<p><b>Roll No:</b> {{ student.roll_no }}</p>
+<p><b>Email:</b> {{ student.email }}</p>
+<p><b>Dept:</b> {{ student.dept }}</p>
+
+<br>
+<a href="/">Back to Home</a> | <a href="/logout/">Logout</a>

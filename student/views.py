@@ -4,6 +4,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django.http import HttpResponse
+from django.views.decorators.csrf import csrf_exempt
 
 try:
     if not User.objects.filter(username='student').exists():
@@ -15,14 +16,12 @@ def login_view(request):
     if request.user.is_authenticated:
         return redirect('student_home')
     if request.method == 'POST':
-        username = request.POST.get('username')
-        password = request.POST.get('password')
-        user = authenticate(request, username=username, password=password)
-        if user is not None:
+        user = authenticate(request, username=request.POST.get('username'), password=request.POST.get('password'))
+        if user:
             login(request, user)
             return redirect('student_home')
         else:
-            messages.error(request, 'Invalid username or password')
+            messages.error(request, 'Invalid')
     return render(request, 'students/login.html')
 
 def logout_view(request):
@@ -33,49 +32,81 @@ def logout_view(request):
 def student_home(request):
     return render(request, 'students/home.html')
 
+@csrf_exempt
 @login_required
 def profile(request):
+    if request.method == 'POST':
+        request.session['p_name'] = request.POST.get('name','')
+        request.session['p_roll'] = request.POST.get('roll','')
+        request.session['p_dept'] = request.POST.get('dept','')
+        request.session['p_email'] = request.POST.get('email','')
+        return redirect('profile')
+    name = request.session.get('p_name','')
+    roll = request.session.get('p_roll','')
+    dept = request.session.get('p_dept','')
+    email = request.session.get('p_email','')
     return HttpResponse(f"""
-    <div style="padding:40px; font-family:Arial">
-    <h1>👤 Profile</h1>
-    <p><b>Username:</b> {request.user.username}</p>
-    <p><b>Name:</b> Yuvan Student</p>
-    <p><b>Roll No:</b> CS2023001</p>
+    <div style="padding:20px;font-family:Arial;max-width:500px;margin:auto">
+    <h2>👤 Edit Profile - Type & Save</h2>
+    <form method="POST">
+    Name:<br><input name="name" value="{name}" placeholder="Type name" style="width:100%;padding:10px"><br><br>
+    Roll No:<br><input name="roll" value="{roll}" placeholder="Type roll" style="width:100%;padding:10px"><br><br>
+    Dept:<br><input name="dept" value="{dept}" placeholder="CSE" style="width:100%;padding:10px"><br><br>
+    Email:<br><input name="email" value="{email}" placeholder="email" style="width:100%;padding:10px"><br><br>
+    <button type="submit" style="background:green;color:white;padding:12px 25px;border:none;border-radius:5px">💾 SAVE</button>
+    </form>
+    <p style="color:green">Saved data will show here after save!</p>
     <br><a href="/home/" style="background:blue;color:white;padding:10px 20px;text-decoration:none;border-radius:5px">Back to Home</a>
     </div>
     """)
 
+@csrf_exempt
 @login_required
 def courses(request):
-    return HttpResponse("""
-    <div style="padding:40px; font-family:Arial">
-    <h1>📚 Courses</h1>
-    <p>1. Python Programming</p>
-    <p>2. DBMS</p>
-    <p>3. Data Structures</p>
-    <br><a href="/home/" style="background:blue;color:white;padding:10px 20px;text-decoration:none;border-radius:5px">Back to Home</a>
+    clist = request.session.get('courses', [])
+    if request.method == 'POST':
+        clist.append({'name':request.POST.get('cname'),'code':request.POST.get('ccode')})
+        request.session['courses'] = clist
+        return redirect('courses')
+    html = "".join([f"<p>📚 {c['name']} - {c['code']}</p>" for c in clist])
+    return HttpResponse(f"""
+    <div style="padding:20px;font-family:Arial;max-width:500px;margin:auto">
+    <h2>📚 Courses - Type & Save</h2>
+    <form method="POST">
+    Course Name:<br><input name="cname" style="width:100%;padding:10px"><br><br>
+    Course Code:<br><input name="ccode" style="width:100%;padding:10px"><br><br>
+    <button type="submit" style="background:green;color:white;padding:10px 20px;border:none">ADD COURSE</button>
+    </form>
+    <hr><h3>Saved Courses:</h3>{html if html else '<p>Empty - type to add</p>'}
+    <br><a href="/home/" style="background:blue;color:white;padding:10px 20px;text-decoration:none;border-radius:5px">Back</a>
     </div>
     """)
 
+@csrf_exempt
 @login_required
 def attendance(request):
-    return HttpResponse("""
-    <div style="padding:40px; font-family:Arial">
-    <h1>📊 Attendance - 85%</h1>
-    <p>Present: 85 days</p>
-    <p>Absent: 15 days</p>
-    <br><a href="/home/" style="background:blue;color:white;padding:10px 20px;text-decoration:none;border-radius:5px">Back to Home</a>
+    alist = request.session.get('atts', [])
+    if request.method == 'POST':
+        alist.append({{'sub':request.POST.get('sub'),'per':request.POST.get('per')}})
+        request.session['atts'] = alist
+        return redirect('attendance')
+    html = "".join([f"<p>{a['sub']} - {a['per']}%</p>" for a in alist])
+    return HttpResponse(f"""
+    <div style="padding:20px;font-family:Arial;max-width:500px;margin:auto">
+    <h2>📊 Attendance - Type & Save</h2>
+    <form method="POST">
+    Subject:<br><input name="sub" style="width:100%;padding:10px"><br><br>
+    Percentage:<br><input name="per" style="width:100%;padding:10px"><br><br>
+    <button type="submit" style="background:green;color:white;padding:10px 20px;border:none">SAVE</button>
+    </form>
+    <hr><h3>Saved:</h3>{html if html else '<p>Empty</p>'}
+    <br><a href="/home/" style="background:blue;color:white;padding:10px 20px;text-decoration:none;border-radius:5px">Back</a>
     </div>
     """)
 
 @login_required
-def fees(request):
-    return HttpResponse('<h1>Fees Page</h1><a href="/home/">Back</a>')
-
+def fees(request): return HttpResponse('<h1>Fees - Empty</h1><a href="/home/">Back</a>')
 @login_required
-def results(request):
-    return HttpResponse('<h1>Results Page</h1><a href="/home/">Back</a>')
-
+def results(request): return HttpResponse('<h1>Results - Empty</h1><a href="/home/">Back</a>')
 @login_required
-def library(request):
-    return HttpResponse('<h1>Library Page</h1><a href="/home/">Back</a>')
+def library(request): return HttpResponse('<h1>Library - Empty</h1><a href="/home/">Back</a>')

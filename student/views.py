@@ -20,7 +20,6 @@ def login_view(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
-            request.session['logged_in'] = True
             return redirect('student_home')
         else:
             messages.error(request, 'Invalid username or password')
@@ -34,4 +33,26 @@ def logout_view(request):
 def student_home(request):
     return render(request, 'students/home.html')
 
-# ... unakku irukka matha functions apdiye irukkatum da keela
+@login_required
+def profile(request):
+    return render(request, 'students/home.html')
+
+@login_required
+def courses(request):
+    return render(request, 'students/home.html')
+
+@login_required
+def attendance(request):
+    return render(request, 'students/home.html')
+
+@login_required
+def fees(request):
+    return render(request, 'students/home.html')
+
+@login_required
+def results(request):
+    return render(request, 'students/home.html')
+
+@login_required
+def library(request):
+    return render(request, 'students/home.html')

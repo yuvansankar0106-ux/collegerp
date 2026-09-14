@@ -1,4 +1,22 @@
 from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+from .models import Student, ExamMark
+
+@login_required(login_url='/login/')
+def student_home(request):
+    return render(request, 'students/home.html')
+
+@login_required(login_url='/login/')
+def profile(request):
+    return render(request, 'students/profile.html')
+
+@login_required(login_url='/login/')
+def courses(request):
+    return render(request, 'students/courses.html')
+
+@login_required(login_url='/login/')
+def attendance(request):
+    return render(request, 'students/attendance.html')
 
 def login_view(request):
     if request.method == 'POST':
@@ -23,7 +41,7 @@ def profile(request):
             'age': request.POST.get('age'),
             'roll_no': request.POST.get('roll_no'),
             'email': request.POST.get('email'),
-            'dept': request.POST.get('dept')
+            'dept': request.POST.get('dept'),
         }
         request.session['student_data'] = data
     return render(request, 'students/profile.html', {'student': data})

@@ -26,3 +26,5 @@ def courses(request):
 @login_required(login_url='/login/')
 def attendance(request):
     return render(request, 'students/attendance.html')
+    def home(request):
+        return render(request, 'students/home.html')

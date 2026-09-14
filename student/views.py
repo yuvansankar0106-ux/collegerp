@@ -40,6 +40,7 @@ def profile(request):
         request.session['p_roll'] = request.POST.get('roll','')
         request.session['p_dept'] = request.POST.get('dept','')
         request.session['p_email'] = request.POST.get('email','')
+        request.session.modified = True
         return redirect('profile')
     name = request.session.get('p_name','')
     roll = request.session.get('p_roll','')
@@ -47,16 +48,14 @@ def profile(request):
     email = request.session.get('p_email','')
     return HttpResponse(f"""
     <div style="padding:20px;font-family:Arial;max-width:500px;margin:auto">
-    <h2>👤 Edit Profile - Type & Save</h2>
+    <h2>Profile Saved: {name} ✅</h2>
     <form method="POST">
     Name:<br><input name="name" value="{name}" placeholder="Type name" style="width:100%;padding:10px"><br><br>
     Roll No:<br><input name="roll" value="{roll}" placeholder="Type roll" style="width:100%;padding:10px"><br><br>
     Dept:<br><input name="dept" value="{dept}" placeholder="CSE" style="width:100%;padding:10px"><br><br>
     Email:<br><input name="email" value="{email}" placeholder="email" style="width:100%;padding:10px"><br><br>
     <button type="submit" style="background:green;color:white;padding:12px 25px;border:none;border-radius:5px">💾 SAVE</button>
-    </form>
-    <p style="color:green">Saved data will show here after save!</p>
-    <br><a href="/home/" style="background:blue;color:white;padding:10px 20px;text-decoration:none;border-radius:5px">Back to Home</a>
+    </form><br><a href="/home/">Back to Home</a>
     </div>
     """)
 
@@ -65,21 +64,19 @@ def profile(request):
 def courses(request):
     clist = request.session.get('courses', [])
     if request.method == 'POST':
-        clist.append({'name':request.POST.get('cname'),'code':request.POST.get('ccode')})
+        clist.append({'name':request.POST.get('cname',''), 'code':request.POST.get('ccode','')})
         request.session['courses'] = clist
+        request.session.modified = True
         return redirect('courses')
     html = "".join([f"<p>📚 {c['name']} - {c['code']}</p>" for c in clist])
     return HttpResponse(f"""
     <div style="padding:20px;font-family:Arial;max-width:500px;margin:auto">
-    <h2>📚 Courses - Type & Save</h2>
+    <h2>Courses</h2>
     <form method="POST">
     Course Name:<br><input name="cname" style="width:100%;padding:10px"><br><br>
     Course Code:<br><input name="ccode" style="width:100%;padding:10px"><br><br>
-    <button type="submit" style="background:green;color:white;padding:10px 20px;border:none">ADD COURSE</button>
-    </form>
-    <hr><h3>Saved Courses:</h3>{html if html else '<p>Empty - type to add</p>'}
-    <br><a href="/home/" style="background:blue;color:white;padding:10px 20px;text-decoration:none;border-radius:5px">Back</a>
-    </div>
+    <button type="submit" style="background:green;color:white;padding:10px 20px;border:none">ADD</button>
+    </form><hr><h3>Saved:</h3>{html if html else 'Empty - type pannu da'}<br><br><a href="/home/">Back</a></div>
     """)
 
 @csrf_exempt
@@ -87,26 +84,24 @@ def courses(request):
 def attendance(request):
     alist = request.session.get('atts', [])
     if request.method == 'POST':
-        alist.append({{'sub':request.POST.get('sub'),'per':request.POST.get('per')}})
+        alist.append({'sub':request.POST.get('sub',''), 'per':request.POST.get('per','')})
         request.session['atts'] = alist
+        request.session.modified = True
         return redirect('attendance')
     html = "".join([f"<p>{a['sub']} - {a['per']}%</p>" for a in alist])
     return HttpResponse(f"""
     <div style="padding:20px;font-family:Arial;max-width:500px;margin:auto">
-    <h2>📊 Attendance - Type & Save</h2>
+    <h2>Attendance</h2>
     <form method="POST">
     Subject:<br><input name="sub" style="width:100%;padding:10px"><br><br>
     Percentage:<br><input name="per" style="width:100%;padding:10px"><br><br>
     <button type="submit" style="background:green;color:white;padding:10px 20px;border:none">SAVE</button>
-    </form>
-    <hr><h3>Saved:</h3>{html if html else '<p>Empty</p>'}
-    <br><a href="/home/" style="background:blue;color:white;padding:10px 20px;text-decoration:none;border-radius:5px">Back</a>
-    </div>
+    </form><hr><h3>Saved:</h3>{html if html else 'Empty'}<br><br><a href="/home/">Back</a></div>
     """)
 
 @login_required
-def fees(request): return HttpResponse('<h1>Fees - Empty</h1><a href="/home/">Back</a>')
+def fees(request): return HttpResponse('<h1>Fees</h1><a href="/home/">Back</a>')
 @login_required
-def results(request): return HttpResponse('<h1>Results - Empty</h1><a href="/home/">Back</a>')
+def results(request): return HttpResponse('<h1>Results</h1><a href="/home/">Back</a>')
 @login_required
-def library(request): return HttpResponse('<h1>Library - Empty</h1><a href="/home/">Back</a>')
+def library(request): return HttpResponse('<h1>Library</h1><a href="/home/">Back</a>')

@@ -2,6 +2,14 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
+from django.contrib.auth.models import User
+
+# Auto create student user for Render
+try:
+    if not User.objects.filter(username='student').exists():
+        User.objects.create_user('student', password='1234')
+except:
+    pass
 
 def login_view(request):
     if request.user.is_authenticated:
@@ -20,28 +28,10 @@ def login_view(request):
 
 def logout_view(request):
     logout(request)
-    request.session.flush()
     return redirect('login')
 
-@login_required(login_url='/login/')
+@login_required
 def student_home(request):
     return render(request, 'students/home.html')
 
-@login_required(login_url='/login/')
-def profile(request):
-    student_data = {
-        'name': 'Yuvan',
-        'age': 20,
-        'roll_no': 'CS101',
-        'email': 'yuvan@college.com',
-        'dept': 'CSE'
-    }
-    return render(request, 'students/profile.html', {'student': student_data})
-
-@login_required(login_url='/login/')
-def courses(request):
-    return render(request, 'students/courses.html')
-
-@login_required(login_url='/login/')
-def attendance(request):
-    return render(request, 'students/attendance.html')
+# ... unakku irukka matha functions apdiye irukkatum da keela
